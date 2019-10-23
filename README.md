@@ -10,15 +10,15 @@
 
 *Chức năng nâng cao:
 --------------------
-	+ Đăng nhập, đăng xuất (đã làm)
-	+ Quản lý, tạo mới, thông tin người dùng 
+  + Đăng nhập, đăng xuất (đã làm)
+  + Quản lý, tạo mới, thông tin người dùng 
       (Đang gặp 2 issue: 1> get roles của user đang bị stackoverflow -> @JsonIgnore vào Set<Role> thì không bị lỗi nhưng không
                             lấy được data từ Set<Role> 
                          2> Khi gửi data json User lên server, thì không binding được trường Set<Role> -> hashcode khi add User thì
                             mặc định User đó là ROLE_MEMBER) 
-   khóa người dùng (kết hợp với chỉnh sửa user)
-   đổi mật khẩu (đã làm)
-	+ Kết xuất chi tiết hóa đơn ở định dạng PDF (đã làm)
+   + khóa người dùng (kết hợp với chỉnh sửa user)
+   + đổi mật khẩu (đã làm)
+   + Kết xuất chi tiết hóa đơn ở định dạng PDF (đã làm)
 
 ------------------------------------------------------
 II. Yêu cầu kỹ thuật:
