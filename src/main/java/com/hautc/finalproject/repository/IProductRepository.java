@@ -11,7 +11,9 @@ import java.util.List;
 
 public interface IProductRepository extends JpaRepository<Product, String> {
 
-    List<Product> findByProductNameContainingOrProductIdContaining(String productName, String productId);
+    List<Product> findByProductNameContainingOrProductIdContainingOrderByDateAddedDesc(String productName, String productId);
+
+    List<Product> findAllByOrderByDateAddedDesc();
 
     @Transactional
     @Modifying

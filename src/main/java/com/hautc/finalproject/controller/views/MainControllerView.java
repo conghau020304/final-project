@@ -51,7 +51,7 @@ public class MainControllerView {
     @PostMapping("/user/action-change-password")
     @ResponseBody
     public String actionChangePass(@RequestBody ChangePassDTO user, Principal principal){
-        User u = userService.getUserByUserName(principal.getName());
+        User u = userService.findByUsername(principal.getName());
         if(!passwordEncoder.matches(user.getOldPassword(), u.getPassword())){
             return "error";
         }

@@ -49,7 +49,7 @@ public class Product implements Serializable {
     }
 
     public void setProductId(String productId) {
-        this.productId = productId;
+        this.productId = productId.toUpperCase();
     }
 
     public String getProductName() {

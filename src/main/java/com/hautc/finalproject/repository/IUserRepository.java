@@ -11,14 +11,14 @@ import java.util.List;
 public interface IUserRepository extends JpaRepository<User, Integer> {
     User findByUsername(String username);
 
-    public User findByUsernameAndEnabled(String userName, short enabled);
+    User findByUsernameAndEnabled(String userName, short enabled);
 
     @Query("SELECT u FROM User u WHERE u.id = ?1")
-    public User findByUserById(Integer id);
+    User findByUserById(Integer id);
 
-    public void deleteById(Integer id);
+    void deleteById(Integer id);
 
-    List<User> findByUsernameContaining(String tk);
+    List<User> findByUsernameContaining(String username);
 
     @Transactional
     @Modifying

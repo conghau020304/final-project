@@ -21,7 +21,7 @@ public class BillServiceImpl implements IBillService {
 
     @Override
     public List<Bill> getAllBill() {
-        return billRepository.findAll();
+        return billRepository.findAllByOrderByDateOfSellDesc();
     }
 
     @Override

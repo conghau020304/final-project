@@ -6,6 +6,7 @@ import com.hautc.finalproject.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/user/api/products")
@@ -25,7 +27,7 @@ public class ProductController {
     @GetMapping()
     public List<Product> getAllProduct(@RequestParam(value = "tk", name = "tk", required = false) String tk) {
         if (tk != null) {
-            return productService.findByIdOrName(tk, tk);
+            return productService.findByIdOrName(tk, tk.toUpperCase());
         }
         return productService.getAllProduct();
     }
@@ -37,9 +39,15 @@ public class ProductController {
     }
 
     @PostMapping
-    public Product insertProduct(@Valid @RequestBody Product product) {
-        Product p = productService.insertAndUpdateProduct(product);
-        return p;
+    public ResponseEntity<Object> insertProduct(@Valid @RequestBody Product product) {
+        Optional<Product> p = productService.findProductById(product.getProductId());
+        if(p.isPresent()){
+            Map<String, String> error = new HashMap<>();
+            error.put("productId", product.getProductId() + " duplicate in database!");
+            return new ResponseEntity(error, HttpStatus.CONFLICT);
+        }
+        Product productInsert = productService.insertAndUpdateProduct(product);
+        return ResponseEntity.ok().body(productInsert);
     }
 
     @PutMapping(value = "/{productId}")

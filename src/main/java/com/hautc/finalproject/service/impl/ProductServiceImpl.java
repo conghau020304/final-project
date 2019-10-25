@@ -20,7 +20,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public List<Product> getAllProduct() {
-        return productRepository.findAll();
+        return productRepository.findAllByOrderByDateAddedDesc();
     }
 
     @Override
@@ -47,7 +47,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public List<Product> findByIdOrName(String name, String id) {
-        return productRepository.findByProductNameContainingOrProductIdContaining(name, id);
+        return productRepository.findByProductNameContainingOrProductIdContainingOrderByDateAddedDesc(name, id);
     }
 
     @Override
@@ -63,11 +63,11 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public Map<String, Object> parameters(String month, List<StatisticalDTO> statisticalDTOList) {
         LocalDateTime now = LocalDateTime.now();
-        Map<String, Object> item = new HashMap<String, Object>();
+        Map<String, Object> item = new HashMap<>();
         item.put("mainDataSoucre", new JRBeanCollectionDataSource(statisticalDTOList));
         item.put("month", month);
         item.put("now", now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        item.put("total", (int)statisticalDTOList.stream().mapToLong(t -> t.getQuantity()).sum());
+        item.put("total", (int)statisticalDTOList.stream().mapToLong(StatisticalDTO::getQuantity).sum());
         return item;
     }
 }

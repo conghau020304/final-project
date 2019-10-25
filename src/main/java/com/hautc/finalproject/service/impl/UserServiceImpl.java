@@ -1,5 +1,6 @@
 package com.hautc.finalproject.service.impl;
 
+import com.hautc.finalproject.dto.UserDTO;
 import com.hautc.finalproject.model.Role;
 import com.hautc.finalproject.model.User;
 import com.hautc.finalproject.repository.IRoleRepository;
@@ -16,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service("userServiceImpl")
 public class UserServiceImpl implements IUserService {
@@ -44,25 +47,22 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public User getUserByUserName(String userName) {
-        return userRepository.findByUsernameAndEnabled(userName, ENABLED);
+    public User findByUsername(String userName) {
+        return userRepository.findByUsername(userName);
     }
 
     @Override
-    public List<User> getAllActiveUserInfo() {
+    public List<User> getAllUserInfo() {
         return userRepository.findAll();
     }
 
     @Override
-    public User getUserInfoById(Integer id) {
-        return userRepository.findByUserById(id);
+    public Optional<User> getUserInfoById(Integer id) {
+        return userRepository.findById(id);
     }
 
     @Override
     public User addUser(User user) {
-        HashSet<Role> roles = new HashSet<>();
-        roles.add(roleRepository.findByName("ROLE_MEMBER"));
-        user.setRoles(roles);
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         return userRepository.save(user);
     }
@@ -82,12 +82,25 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public List<User> findByUsername(String tk) {
-        return userRepository.findByUsernameContaining(tk);
+    public List<User> searchByUsername(String username) {
+        return userRepository.findByUsernameContaining(username);
     }
 
     @Override
     public void changePassword(String password, String username) {
         userRepository.changePassword(password, username);
+    }
+
+    @Override
+    public boolean checkDuplicateUsernameBeforeUpdate(String oldUsername, String newUsername) {
+        List<User> users = userRepository.findAll();
+        List<User> result = users.stream()
+                .filter(line -> !oldUsername.equalsIgnoreCase(line.getUsername()))
+                .collect(Collectors.toList());
+        User user = result.stream()
+                .filter(x -> newUsername.equalsIgnoreCase(x.getUsername()))
+                .findAny()
+                .orElse(null);
+        return user != null;
     }
 }

@@ -4,14 +4,15 @@ import com.hautc.finalproject.model.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IUserService extends UserDetailsService {
 
-    User getUserByUserName(String userName);
+    User findByUsername(String userName);
 
-    List<User> getAllActiveUserInfo();
+    List<User> getAllUserInfo();
 
-    User getUserInfoById(Integer id);
+    Optional<User> getUserInfoById(Integer id);
 
     User addUser(User user);
 
@@ -19,7 +20,9 @@ public interface IUserService extends UserDetailsService {
 
     void deleteUser(Integer id);
 
-    List<User> findByUsername(String tk);
+    List<User> searchByUsername(String username);
 
     void changePassword(String password, String username);
+
+    boolean checkDuplicateUsernameBeforeUpdate(String oldUsername, String newUsername);
 }
