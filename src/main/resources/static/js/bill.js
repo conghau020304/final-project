@@ -1,5 +1,5 @@
 $(document).ready(function(){
-
+    $('#tab2').addClass('active');
      var formatter = new Intl.NumberFormat('vi-VI', {
         style: 'currency',
         currency: 'vnd',
@@ -20,6 +20,7 @@ $(document).ready(function(){
                 $(this).closest('tr').children('td:nth-child(3)').text(quantity-quantityPurchased);
                 $(this).closest('tr').children('td:nth-child(7)').find('input').css('background', 'transparent');
                 var temp = getPrice(price);
+                console.log(temp);
                 var detail = {
                     productId: productId,
                     productName: productName,
@@ -70,8 +71,9 @@ $(document).ready(function(){
 
     }
 
+
      function getPrice(str){
-        var temp = str.substring(0, str.indexOf(' ')).replace(',','');
+        var temp = str.substring(0, str.indexOf(' ')).replace(/,/g,'');
         return temp;
      }
 

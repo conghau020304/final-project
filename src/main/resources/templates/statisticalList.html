@@ -12,7 +12,7 @@
           integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 
     <link rel="stylesheet" type="text/css" th:href="@{../../css/all.css}"/>
-    <link rel="stylesheet" type="text/css" th:href="@{../../css/style.css}"/>
+    <link rel="stylesheet" th:href="@{../../css/style.css}" type="text/css"/>
 
 </head>
 <body>
@@ -20,10 +20,10 @@
 <div th:replace="header :: header">...</div>
 
 <div class="content container-fluid">
-    <div class="list-product col-lg-8 col-lg-offset-2">
+    <div class="col-lg-8 col-lg-offset-2">
         <div class="col-lg-3">
             <div class="input-group">
-                <form th:action="@{/admin/report}" class="input-group">
+                <form class="input-group" th:action="@{/admin/report}">
                 <select id="select-month" name="m" class="form-control">
                     <option value="none">
                         <script>

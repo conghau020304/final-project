@@ -1,5 +1,5 @@
 $(document).ready(function(){
-
+    $('#tab5').addClass('active');
     $("#update").hide();
     assignDataToTable();
 
@@ -18,30 +18,59 @@ $(document).ready(function(){
         });
     }
 
-    function dom(users){
-        $("#users-table").empty();
-        if(users.length > 0){
-            for (var i in users) {
-                $("#users-table").
-                append("<tr> \
-                            <td>" +  users[i].id + "</td> \
-                            <td>" +  users[i].username + "</td> \
-                            <td>" +  users[i].password + "</td> \
-                            <td>" +  users[i].enabled  + "</td> \
-                            <td><button id='delete' class='btn btn-link'> \ <i class='fas fa-trash-alt'></i> \ </button> \ </td> \
-                            <td><button id='edit' class='btn btn-link'> \ <i class='far fa-edit'></i> \ </button> \ </td> \
-                        </tr>");
-             }
-        }else{
+function dom(users){
+    $("#users-table").empty();
+    if(users.length > 0){
+
+        for (var i in users) {
+            var temp;
+            var tempRole1 = "";
+            var tempRole2 = "";
+            if(users[i].enabled == 1){
+                temp = "<lable class='label label-success'> enable </label>";
+            }else{
+                temp = "<lable class='label label-default'> disable </label>";
+            }
+            var roles = users[i].roles;
+            if(roles.length > 0){
+                for(var j in roles){
+                    if(roles[j].name === "ROLE_ADMIN"){
+                        tempRole1 = "<span><lable class='label label-primary'>"+ roles[j].name +"</label></span>";
+                    }
+                    if(roles[j].name === "ROLE_MEMBER"){
+                        tempRole2 = "<span><lable class='label label-info'>"+ roles[j].name +"</label> </span>";
+                    }
+                }
+
+            }
+            var tempRole;
+            if(tempRole1 != ""){
+               tempRole = tempRole1 + "&nbsp" + tempRole2;
+            }else{
+               tempRole = tempRole2;
+            }
             $("#users-table").
-                append("<tr> \
-                   <td colspan ='6'><h4 style='color:red'> Table is empty!</h4></td> \
-               </tr>");
-        }
+            append("<tr> \
+                <td> " +  users[i].id + "</td> \
+                <td class = 'text-left'>" +  users[i].username + "</td> \
+                <td class = 'text-left'>" +  users[i].password.substring(0, 20) + "</td> \
+                <td>" +  temp  + "</td> \
+                <td class='text-left'> " +  tempRole + "</td> \
+                <td><button id='delete' class='btn btn-link'> \ <i class='fas fa-trash-alt'></i> \ </button> \ </td> \
+                <td><button id='edit' class='btn btn-link'> \ <i class='far fa-edit'></i> \ </button> \ </td> \
+            </tr>");
+         }
+    }else{
+        $("#users-table").
+            append("<tr> \
+               <td colspan ='6'><h4 style='color:red'> Table is empty!</h4></td> \
+           </tr>");
     }
+}
+
 
     $("#save").click(function() {
-/*      var detail = [];
+        var detail = [];
         if($('#roles :selected').text().trim() === "ROLE_ADMIN"){
             $("#roles option").each(function()
             {
@@ -58,12 +87,11 @@ $(document).ready(function(){
              }
              detail.push(temp2);
         }
-*/
         var jsonVar = {
             username: $("#username").val(),
             password: $("#password").val(),
-            enabled: $("#enabled").val()
-           // roles: detail
+            enabled: $("#enabled").val(),
+            roles: detail
 
         };
         $.ajax({
@@ -78,11 +106,36 @@ $(document).ready(function(){
             },
             error: function(err) {
                 console.log(err);
-                $.notify("ERROR", "error");
+                var errMess = JSON.parse(JSON.stringify(err.responseJSON));
+                validate(errMess);
             }
         });
 
     });
+
+    function validate(err){
+        if(err.username != null){
+          $.notify(err.username, "error");
+          $('#username').focus();
+          $('#username').css('background', 'yellow');
+        }else{
+          $('#username').css('background', 'transparent');
+        }
+        if(err.password != null){
+          $.notify(err.password, "error");
+          $('#password').focus();
+          $('#password').css('background', 'yellow');
+        }else{
+          $('#password').css('background', 'transparent');
+        }
+    }
+
+    function showError404(err){
+        var errMess = JSON.parse(JSON.stringify(err.responseJSON));
+        if(errMess.message != null){
+             $.notify(errMess.message, "error");
+        }
+    }
 
     $("#reset").click(function() {
         clearData();
@@ -94,6 +147,8 @@ $(document).ready(function(){
        $("#id").val("");
        $("#username").val("");
        $("#password").val("");
+       $('#username').css('background', 'transparent');
+       $('#password').css('background', 'transparent');
      }
 
       $('table').on('click', 'button[id="delete"]', function(e){
@@ -111,6 +166,7 @@ $(document).ready(function(){
                   },
                   error: function(err) {
                       console.log(err);
+                      showError404(err);
                   }
               });
           }else{
@@ -120,23 +176,24 @@ $(document).ready(function(){
 
       $('table').on('click','button[id="edit"]',function(e){
         var id = $(this).closest('tr').children('td:first').text();
-        $('#id').prop('readonly', true);
-        $("#update").show();
-        $("#save").hide();
+
         // get data
         $.ajax({
             type:"GET",
             url:"http://localhost:8080/admin/api/user/" + id,
             success: function(data){
+                $('#id').prop('readonly', true);
+                $("#update").show();
+                $("#save").hide();
                 var user = JSON.parse(JSON.stringify(data));
                 $('#id').val(user.id);
                 $('#username').val(user.username);
-                $('#password').val(user.password);
+                $('#password').val(user.password.substring(0, 20));
                 $('#enabled').val(user.enabled);
             },
             error: function(err){
                console.log(err);
-               $.notify("ERROR", "error");
+               showError404(err);
             }
         });
       });
@@ -161,7 +218,8 @@ $(document).ready(function(){
             },
             error: function(err){
                 console.log(err);
-                 $.notify("ERROR", "error");
+                var errMess = JSON.parse(JSON.stringify(err.responseJSON));
+                validate(errMess);
             }
         });
     });
@@ -181,4 +239,5 @@ $(document).ready(function(){
          });
 
      });
+
 });

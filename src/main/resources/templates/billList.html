@@ -47,53 +47,53 @@
                 </div>
                 <div class="panel-body">
                     <table id="table-products" class="table table-striped">
-                        <thead>
-                        <tr class="text-center">
-                            <th class="text-center">ID</th>
-                            <th class="text-center">Name</th>
-                            <th class="text-center">DateOfBirth</th>
-                            <th class="text-center">Phone</th>
-                            <th class="text-center">Address</th>
-                            <th class="text-center">Note</th>
-                            <th class="text-center">DateOfSell</th>
+                        <thead class="text-center">
+                        <tr>
+                            <th>ID</th>
+                            <th class="text-left">Name</th>
+                            <th class="text-left">DateOfBirth</th>
+                            <th class="text-left">Phone</th>
+                            <th class="text-left">Address</th>
+                            <th class="text-left">Note</th>
+                            <th class="text-left">DateOfSell</th>
                             <th class="text-center">Detail</th>
                             <th class="text-center">Delete</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="text-center">
                                 <div th:each="bill : ${bills}">
                                         <tr>
-                                            <td th:text="${bill.billId}" class="text-center"></td>
-                                            <td th:text="${bill.customerName}" class="text-center" ></td>
-                                            <td th:text="${bill.customerDateOfBirth}" class="text-center"></td>
-                                            <td th:text="${bill.customerPhone}" class="text-center"></td>
-                                            <td th:text="${bill.customerAddress}" class="text-center"></td>
-                                            <td th:text="${bill.note}" class="text-center"></td>
-                                            <td th:text="${#temporals.format(bill.dateOfSell, 'yyyy-MM-dd HH:mm:ss')}" class="text-center">startTime</td>
-                                            <td class="text-center"><button th:id="${bill.billId}+'detail'" class="btn btn-link" onclick="showTableDetail(this)"><i class="fas fa-info-circle"></i></button></td>
-                                            <td class="text-center"><a th:href="@{/user/delete-bill/{billId}(billId=${bill.billId})}" class="btn btn-link" onclick="return confirmDelete();" ><i class="fas fa-trash-alt"></i></a></td>
+                                            <td th:text="${bill.billId}"></td>
+                                            <td th:text="${bill.customerName}" class="text-left" ></td>
+                                            <td th:text="${bill.customerDateOfBirth}" class="text-left"></td>
+                                            <td th:text="${bill.customerPhone}" class="text-left"></td>
+                                            <td th:text="${bill.customerAddress}" class="text-left"></td>
+                                            <td th:text="${bill.note}" class="text-left"></td>
+                                            <td th:text="${#temporals.format(bill.dateOfSell, 'yyyy-MM-dd HH:mm:ss')}" class="text-left">startTime</td>
+                                            <td><button th:id="${bill.billId}+'detail'" class="btn btn-link" onclick="showTableDetail(this)"><i class="fas fa-info-circle"></i></button></td>
+                                            <td><a th:href="@{/user/delete-bill/{billId}(billId=${bill.billId})}" class="btn btn-link" onclick="return confirmDelete();" ><i class="fas fa-trash-alt"></i></a></td>
                                         </tr>
                                         <tr>
-                                            <td colspan="1">
-                                            <td colspan="6">
+                                            <td colspan="2">
+                                            <td colspan="5">
                                                 <table th:id="'tableDetail'+${bill.billId}" class="table table-bordered" hidden>
-                                                    <thead>
+                                                    <thead class="text-center">
                                                         <tr>
-                                                            <th>ProductID</th>
-                                                            <th>BillID</th>
-                                                            <th>Quantity</th>
-                                                            <th>Price</th>
-                                                            <th>Total</th>
+                                                            <th class="text-center">ProductID</th>
+                                                            <th class="text-center">BillID</th>
+                                                            <th class="text-center">Quantity</th>
+                                                            <th class="text-left" style="padding-left: 10px;">Price</th>
+                                                            <th class="text-left" style="padding-left: 10px;">Total</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody>
+                                                    <tbody class="text-center">
                                                         <div th:each="detail : ${bill.productBillList}">
                                                             <tr>
                                                                 <td th:text="${detail.productId}"></td>
                                                                 <td th:text="${detail.billId}"></td>
                                                                 <td th:text="${detail.quantity}"></td>
-                                                                <td><span th:text="${#numbers.formatDecimal(detail.price, 0, 'COMMA', 0, 'POINT')}"></span> vnđ</td>
-                                                                <td><span th:text="${#numbers.formatDecimal(detail.price * detail.quantity, 0, 'COMMA', 0, 'POINT')}"></span> vnđ</td>
+                                                                <td class="text-left" style="padding-left: 10px;"><span th:text="${#numbers.formatDecimal(detail.price, 0, 'COMMA', 0, 'POINT')}"></span> vnđ</td>
+                                                                <td class="text-left" style="padding-left: 10px;"><span th:text="${#numbers.formatDecimal(detail.price * detail.quantity, 0, 'COMMA', 0, 'POINT')}"></span> vnđ</td>
                                                             </tr>
                                                         </div>
                                                         <tr>
@@ -123,6 +123,9 @@
 <script th:src="@{@{../../js/notify.min.js}}"></script>
 <script th:src="@{@{../../js/notify.js}}"></script>
 <script>
+$(document).ready(function(){
+    $('#tab3').addClass('active');
+});
     function showTableDetail(r){
         var id = parseInt(r.id);
         $('#tableDetail'+id).toggle();

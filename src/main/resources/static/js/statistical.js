@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    $('#tab4').addClass('active');
     assignDataToTable();
     function assignDataToTable() {
         $.ajax({

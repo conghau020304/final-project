@@ -9,7 +9,10 @@
 .products{
     border-right: 1px solid blue;
 }
-
+.list-product{
+    border-right: 1px solid blue;
+    padding: 0px;
+}
 .my-form
 {
     padding-top: 1.5rem;

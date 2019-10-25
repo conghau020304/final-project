@@ -2,6 +2,7 @@ $(document).ready(function(){
 
     $("#update").hide();
     assignDataToTable();
+    $('#tab1').addClass('active');
 
      var formatter = new Intl.NumberFormat('vi-VI', {
               style: 'currency',
@@ -73,10 +74,12 @@ $(document).ready(function(){
                 assignDataToTable();
                 clearData();
                 $.notify("Insert product " + jsonVar.productId + " success!", "success");
+                console.log(data);
             },
             error: function(err) {
-                var validate = JSON.parse(JSON.stringify(err.responseJSON));
-                validated(validate);
+                var errMes = JSON.parse(JSON.stringify(err.responseJSON));
+                validated(errMes);
+                console.log(err);
             }
         });
 
@@ -131,15 +134,16 @@ $(document).ready(function(){
       //UPDATE PRODUCT
       $('table').on('click','button[id="edit"]',function(e){
         var productId = $(this).closest('tr').children('td:first').text();
-        $('#productId').prop('readonly', true);
-        $('#productId').css('background','#eee')
-        $("#update").show();
-        $("#save").hide();
         // get data
         $.ajax({
             type:"GET",
             url:"http://localhost:8080/user/api/products/" + productId,
             success: function(data){
+                $('#productId').prop('readonly', true);
+                $('#productId').css('background','#eee')
+                $("#update").show();
+                $("#save").hide();
+
                 var product = JSON.parse(JSON.stringify(data));
                 $('#productId').val(product.productId);
                 $('#productName').val(product.productName);
@@ -158,7 +162,6 @@ $(document).ready(function(){
    // edit data
     $('#update').on('click', function(){
         var productId = $("#productId").val();
-        console.log(productId);
         var jsonVar = {
             productName: $("#productName").val(),
             quantity: $("#quantity").val(),
@@ -178,8 +181,19 @@ $(document).ready(function(){
             },
             error: function(err){
                 console.log(err);
-                var errMes = JSON.parse(JSON.stringify(err.responseJSON));
-                validated(errMes);
+                 var errMes = JSON.parse(JSON.stringify(err.responseJSON));
+                 if(err.status == 404){
+                    if(errMes.message != null){
+                       $.notify(errMes.message, "error");
+                       $('#productId').focus();
+                       $('#productId').css('background', 'yellow');
+                    }else{
+                       $('#productId').css('background', 'transparent');
+                    }
+                 }
+                  if(err.status == 400){
+                     validated(errMes);
+                  }
             }
         });
     });
@@ -213,6 +227,7 @@ $(document).ready(function(){
           }else{
              $('#productId').css('background', 'transparent');
           }
+
       }
 
    $("#btn-search").click(function() {
