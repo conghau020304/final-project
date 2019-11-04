@@ -6,6 +6,7 @@ import com.hautc.finalproject.model.User;
 import com.hautc.finalproject.service.IUserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -32,7 +33,7 @@ public class UserController {
     public List<UserDTO> getAllUser(@RequestParam(value = "tk", name = "tk", required = false) String tk) {
         List<User> users;
         if (tk != null)
-            users =  userService.searchByUsername(tk);
+            users = userService.searchByUsername(tk);
         else {
             users = userService.getAllUserInfo();
         }
@@ -40,6 +41,7 @@ public class UserController {
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
+
 
     @PostMapping("/user")
     public ResponseEntity addUser(@Valid @RequestBody UserDTO userRecord) {
@@ -53,7 +55,7 @@ public class UserController {
     }
 
     @PutMapping("/user/{id}")
-    public ResponseEntity<User> updateUser(@Valid @RequestBody User userRecord, @PathVariable Integer id) throws ResourceNotFoundException {
+    public ResponseEntity<UserDTO> updateUser(@Valid @RequestBody UserDTO userRecord, @PathVariable Integer id) throws ResourceNotFoundException {
 
         User user = userService.getUserInfoById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid user Id:" + id + " !"));
 
@@ -62,7 +64,7 @@ public class UserController {
             error.put("username", userRecord.getUsername() + " duplicate in database!");
             return new ResponseEntity(error, HttpStatus.CONFLICT);
         }
-        return ResponseEntity.ok().body(userService.updateUser(id, userRecord));
+        return ResponseEntity.ok().body(convertToDto(userService.updateUser(id, convertToEntity(userRecord))));
     }
 
     @DeleteMapping("/user/{id}")
@@ -72,16 +74,16 @@ public class UserController {
     }
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Integer id) throws ResourceNotFoundException {
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Integer id) throws ResourceNotFoundException {
         User userInfo = userService.getUserInfoById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid user Id:" + id + " !"));
-        return ResponseEntity.ok().body(userInfo);
+        return ResponseEntity.ok().body(convertToDto(userInfo));
     }
 
     private UserDTO convertToDto(User user) {
         return modelMapper.map(user, UserDTO.class);
     }
 
-    private User convertToEntity(UserDTO userDTO){
+    private User convertToEntity(UserDTO userDTO) {
         return modelMapper.map(userDTO, User.class);
     }
 

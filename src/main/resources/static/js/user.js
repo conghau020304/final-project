@@ -2,6 +2,7 @@ $(document).ready(function(){
     $('#tab5').addClass('active');
     $("#update").hide();
     assignDataToTable();
+    assignDataRole();
 
     function assignDataToTable() {
         $.ajax({
@@ -9,6 +10,7 @@ $(document).ready(function(){
           contentType: "application/json",
           url:"http://localhost:8080/admin/api/user",
           success: function(data) {
+            console.log(data);
             var users = JSON.parse(JSON.stringify(data));
             dom(users);
             },
@@ -17,56 +19,76 @@ $(document).ready(function(){
             }
         });
     }
-
-function dom(users){
-    $("#users-table").empty();
-    if(users.length > 0){
-
-        for (var i in users) {
-            var temp;
-            var tempRole1 = "";
-            var tempRole2 = "";
-            if(users[i].enabled == 1){
-                temp = "<lable class='label label-success'> enable </label>";
-            }else{
-                temp = "<lable class='label label-default'> disable </label>";
+    function assignDataRole(){
+        $.ajax({
+          type:"GET",
+          contentType: "application/json",
+          url:"http://localhost:8080/admin/api/roles",
+          success: function(data) {
+            var roles = JSON.parse(JSON.stringify(data));
+            domRole(roles);
+            },
+          error: function(err) {
+            console.log(err);
             }
-            var roles = users[i].roles;
-            if(roles.length > 0){
-                for(var j in roles){
-                    if(roles[j].name === "ROLE_ADMIN"){
-                        tempRole1 = "<span><lable class='label label-primary'>"+ roles[j].name +"</label></span>";
-                    }
-                    if(roles[j].name === "ROLE_MEMBER"){
-                        tempRole2 = "<span><lable class='label label-info'>"+ roles[j].name +"</label> </span>";
-                    }
-                }
-
-            }
-            var tempRole;
-            if(tempRole1 != ""){
-               tempRole = tempRole1 + "&nbsp" + tempRole2;
-            }else{
-               tempRole = tempRole2;
-            }
-            $("#users-table").
-            append("<tr> \
-                <td> " +  users[i].id + "</td> \
-                <td class = 'text-left'>" +  users[i].username + "</td> \
-                <td class = 'text-left'>" +  users[i].password.substring(0, 20) + "</td> \
-                <td>" +  temp  + "</td> \
-                <td class='text-left'> " +  tempRole + "</td> \
-                <td><button id='delete' class='btn btn-link'> \ <i class='fas fa-trash-alt'></i> \ </button> \ </td> \
-                <td><button id='edit' class='btn btn-link'> \ <i class='far fa-edit'></i> \ </button> \ </td> \
-            </tr>");
-         }
-    }else{
-        $("#users-table").
-            append("<tr> \
-               <td colspan ='6'><h4 style='color:red'> Table is empty!</h4></td> \
-           </tr>");
+        });
     }
-}
+
+    function domRole(roles){
+        $.each(roles, function (key, entry) {
+            $('#roles').append($('<option></option>').attr('value', entry.id).text(entry.name));
+         })
+    }
+
+    function dom(users){
+        $("#users-table").empty();
+        if(users.length > 0){
+
+            for (var i in users) {
+                var temp;
+                var tempRole1 = "";
+                var tempRole2 = "";
+                if(users[i].enabled == 1){
+                    temp = "<lable class='label label-success'> enable </label>";
+                }else{
+                    temp = "<lable class='label label-default'> disable </label>";
+                }
+                var roles = users[i].roles;
+                if(roles.length > 0){
+                    for(var j in roles){
+                        if(roles[j].name === "ROLE_ADMIN"){
+                            tempRole1 = "<span><lable class='label label-primary'>"+ roles[j].name +"</label></span>";
+                        }
+                        if(roles[j].name === "ROLE_MEMBER"){
+                            tempRole2 = "<span><lable class='label label-info'>"+ roles[j].name +"</label> </span>";
+                        }
+                    }
+
+                }
+                var tempRole;
+                if(tempRole1 != ""){
+                   tempRole = tempRole1 + "&nbsp" + tempRole2;
+                }else{
+                   tempRole = tempRole2;
+                }
+                $("#users-table").
+                append("<tr> \
+                    <td> " +  users[i].id + "</td> \
+                    <td class = 'text-left'>" +  users[i].username + "</td> \
+                    <td class = 'text-left'>" +  users[i].password.substring(0, 20) + "</td> \
+                    <td>" +  temp  + "</td> \
+                    <td class='text-left'> " +  tempRole + "</td> \
+                    <td><button id='delete' class='btn btn-link'> \ <i class='fas fa-trash-alt'></i> \ </button> \ </td> \
+                    <td><button id='edit' class='btn btn-link'> \ <i class='far fa-edit'></i> \ </button> \ </td> \
+                </tr>");
+             }
+        }else{
+            $("#users-table").
+                append("<tr> \
+                   <td colspan ='6'><h4 style='color:red'> Table is empty!</h4></td> \
+               </tr>");
+        }
+    }
 
 
     $("#save").click(function() {
@@ -182,6 +204,7 @@ function dom(users){
             type:"GET",
             url:"http://localhost:8080/admin/api/user/" + id,
             success: function(data){
+               console.log(data);
                 $('#id').prop('readonly', true);
                 $("#update").show();
                 $("#save").hide();
@@ -190,6 +213,10 @@ function dom(users){
                 $('#username').val(user.username);
                 $('#password').val(user.password.substring(0, 20));
                 $('#enabled').val(user.enabled);
+                if(user.roles.length == 2)
+                    $('#roles').val('18').change();
+                else
+                    $('#roles').val(user.roles[0].id).change();
             },
             error: function(err){
                console.log(err);

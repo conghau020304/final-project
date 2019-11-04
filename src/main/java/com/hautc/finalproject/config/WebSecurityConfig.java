@@ -23,12 +23,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
 
     @Bean
-    private PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    private ModelMapper modelMapper() {
+    public ModelMapper modelMapper() {
         return new ModelMapper();
     }
 
@@ -42,7 +42,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
             .authorizeRequests()
             .antMatchers("/common/**/").permitAll()
-            .antMatchers("/user/**/").hasRole("MEMBER")
+            .antMatchers("/user/**/").hasRole("MEMBER") //.access("hasRole('MEMBER') or hasRole('ADMIN')")
             .antMatchers("/admin/**/").hasRole("ADMIN")
             .and()
             .formLogin()
